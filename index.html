@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>تحدي اللغة العربية | بنك الأسئلة الموسع</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Tahoma,Arial,sans-serif;background:#3b071f;color:white;overflow:hidden}
+.stage{width:100vw;height:100vh;position:relative;background:#3b071f;display:flex;align-items:center;justify-content:center}
+.game-image{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center}
+.hotspot{position:absolute;border:2px solid transparent;border-radius:18px;background:rgba(255,255,255,.01);cursor:pointer;transition:.18s;z-index:5}
+.hotspot:hover{background:rgba(255,255,255,.10);border-color:rgba(255,255,255,.55);box-shadow:0 0 22px rgba(255,215,120,.75);transform:scale(1.015)}
+.start{left:46%;top:43%;width:34%;height:8%;border-radius:28px}
+.reading{left:31%;top:57%;width:12%;height:24%}
+.grammar{left:44%;top:57%;width:12%;height:24%}
+.vocab{left:57%;top:57%;width:12%;height:24%}
+.expression{left:70%;top:57%;width:12%;height:24%}
+.spelling{left:83%;top:57%;width:12%;height:24%}
+.sound{left:1.5%;bottom:3%;width:7%;height:7%}
+.music{left:9%;bottom:3%;width:7%;height:7%}
+.help{left:16.5%;bottom:3%;width:7%;height:7%}
+.score{position:absolute;top:12px;right:12px;z-index:6;background:rgba(59,7,31,.72);border:1px solid rgba(255,255,255,.25);color:white;padding:10px 14px;border-radius:18px;font-weight:900;backdrop-filter:blur(8px)}
+.tip{position:absolute;right:50%;transform:translateX(50%);bottom:14px;z-index:6;background:rgba(59,7,31,.7);color:white;border-radius:999px;padding:10px 18px;font-weight:900;backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.22)}
+.overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(43,7,28,.84);z-index:20;padding:18px}
+.overlay.show{display:flex}
+.card{width:min(850px,96vw);background:linear-gradient(135deg,#fff7ed,#fff);color:#3b071f;border-radius:34px;padding:28px;box-shadow:0 30px 80px rgba(0,0,0,.45);text-align:right;border:4px solid #f6b73c;max-height:92vh;overflow:auto}
+.card h1{margin:0 0 10px;color:#8f1d4b;font-size:clamp(30px,5vw,54px)}
+.card p{font-size:20px;line-height:2}
+.meta{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 14px}
+.pill{background:#fce7f3;color:#8f1d4b;border-radius:999px;padding:7px 12px;font-weight:900}
+.question{font-size:24px;font-weight:900;margin:18px 0;line-height:1.7}
+.options{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.option{border:2px solid #f1ccda;background:white;color:#3b071f;border-radius:18px;padding:16px;font-size:18px;font-weight:900;cursor:pointer;text-align:right}
+.option:hover{background:#fff0f6}
+.option.correct{background:#dcfce7;border-color:#22c55e;color:#166534}
+.option.wrong{background:#fee2e2;border-color:#ef4444;color:#991b1b}
+.feedback{display:none;margin-top:14px;border-radius:18px;padding:14px;font-size:18px;font-weight:900;line-height:1.8}
+.feedback.good{display:block;background:#dcfce7;color:#166534}
+.feedback.bad{display:block;background:#fee2e2;color:#991b1b}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.btn{border:none;border-radius:18px;padding:14px 24px;font-size:18px;font-weight:900;cursor:pointer}
+.primary{background:linear-gradient(135deg,#8f1d4b,#c92d68);color:white}
+.secondary{background:#f1d5df;color:#6b1235}
+.confetti{position:fixed;top:-30px;font-size:28px;z-index:100;pointer-events:none;animation:fall 2.5s linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg);opacity:.1}}
+@media(max-width:900px){.game-image{object-fit:contain;background:#3b071f}.tip{font-size:12px;bottom:8px}.score{font-size:13px}.options{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main class="stage">
+  <img src="assets/game_screen.png" class="game-image" alt="واجهة تحدي اللغة العربية">
+  <div class="score">النقاط: <span id="score">0</span> ⭐ | بنك الأسئلة: <span id="count">0</span></div>
+  <div class="tip">اضغطي على بوابات اللعبة داخل الصورة ✨ الأسئلة عشوائية ومتنوعة من محتوى الملف</div>
+  <button class="hotspot start" onclick="openChallenge('mixed')" aria-label="ابدئي التحدي"></button>
+  <button class="hotspot reading" onclick="openChallenge('reading')" aria-label="فهم النصوص"></button>
+  <button class="hotspot grammar" onclick="openChallenge('grammar')" aria-label="القواعد النحوية"></button>
+  <button class="hotspot vocab" onclick="openChallenge('external')" aria-label="القراءة الخارجية"></button>
+  <button class="hotspot expression" onclick="openChallenge('memory')" aria-label="الحفظ"></button>
+  <button class="hotspot spelling" onclick="openChallenge('spelling')" aria-label="الإملاء"></button>
+  <button class="hotspot sound" onclick="say('أحسنت يا بطلة اللغة العربية')" aria-label="الصوت"></button>
+  <button class="hotspot music" onclick="say('هيا نبدأ مغامرة اللغة العربية')" aria-label="الموسيقى"></button>
+  <button class="hotspot help" onclick="openHelp()" aria-label="المساعدة"></button>
+</main>
+
+<section id="overlay" class="overlay">
+  <div class="card">
+    <h1 id="title">تحدي اللغة العربية</h1>
+    <p id="intro">اختاري الإجابة الصحيحة لتحصلي على النقاط.</p>
+    <div class="meta">
+      <span class="pill" id="categoryPill">فرع</span>
+      <span class="pill" id="progressPill">سؤال</span>
+      <span class="pill">+10 نقاط</span>
+    </div>
+    <div id="question" class="question"></div>
+    <div id="options" class="options"></div>
+    <div id="feedback" class="feedback"></div>
+    <div class="actions">
+      <button class="btn primary" onclick="next()">سؤال عشوائي جديد ✨</button>
+      <button class="btn secondary" onclick="closeOverlay()">العودة للواجهة</button>
+    </div>
+  </div>
+</section>
+
+<audio id="correctSound" src="https://assets.mixkit.co/active_storage/sfx/2018/2018-preview.mp3"></audio>
+<audio id="wrongSound" src="https://assets.mixkit.co/active_storage/sfx/2955/2955-preview.mp3"></audio>
+
+<script>
+const bank = {"reading": [{"q": "ما الفكرة العامة لنص «العمل الجماعي»؟", "options": ["أهمية العمل الجماعي", "فوائد النوم", "وصف السوق", "أهمية السفر"], "a": "أهمية العمل الجماعي", "msg": "صحيح؛ النص يدور حول أهمية العمل الجماعي."}, {"q": "لماذا تفضّل آية ومنال العمل الجماعي؟", "options": ["لأنه يوفّر الجهد ويختصر الوقت", "لأنه يطيل الوقت", "لأنه يمنع التعاون", "لأنه يضعف الإنجاز"], "a": "لأنه يوفّر الجهد ويختصر الوقت", "msg": "أحسنتِ؛ هذا وجه الاتفاق بينهما."}, {"q": "ما الذي ميّز رأي الجوري؟", "options": ["إعطاء مثال للعمل الجماعي داخل الصف", "الحديث عن السفر", "ذكر الطعام", "وصف المكتبة"], "a": "إعطاء مثال للعمل الجماعي داخل الصف", "msg": "رائعة؛ هذا يميز رأي الجوري."}, {"q": "أي تعليق أظهر التأثر بالثقافة الإسلامية؟", "options": ["رأي سعيد من دولة الكويت", "رأي منال", "رأي الجوري", "رأي محمد"], "a": "رأي سعيد من دولة الكويت", "msg": "صحيح؛ ورد ذلك في تدريبات النص."}, {"q": "لماذا اتفقت جميع الآراء؟", "options": ["لأنها أكدت أهمية العمل الجماعي", "لأنها رفضت التعاون", "لأنها تحدثت عن الرياضة", "لأنها تناولت السفر"], "a": "لأنها أكدت أهمية العمل الجماعي", "msg": "إجابة دقيقة."}, {"q": "ما الغرض من نص «العمل الجماعي»؟", "options": ["عرض آراء متنوعة عن العمل الجماعي", "وصف رحلة مدرسية", "شرح قاعدة نحوية", "تعليم كتابة رسالة"], "a": "عرض آراء متنوعة عن العمل الجماعي", "msg": "أحسنتِ؛ هذا هو الغرض الأوضح."}, {"q": "ما دلالة قول: «اليد الواحدة لا تصفق»؟", "options": ["أهمية التعاون", "أهمية الصمت", "كثرة الكلام", "السرعة"], "a": "أهمية التعاون", "msg": "صحيح؛ المثل يؤكد قيمة التعاون."}, {"q": "ما نتيجة العمل الجماعي؟", "options": ["ضمان المشاركة والمتعة في الوصول للهدف", "تعطيل العمل", "إلغاء الأفكار", "ضعف الأداء"], "a": "ضمان المشاركة والمتعة في الوصول للهدف", "msg": "ممتازة."}, {"q": "ما معنى كلمة «الجهد» في سياق النص؟", "options": ["التعب والمشقة", "اللعب", "الراحة", "الصوت"], "a": "التعب والمشقة", "msg": "صحيح."}, {"q": "أي كلمة تناسب حقل التعاون؟", "options": ["مساندة", "وحدة", "خصام", "تراجع"], "a": "مساندة", "msg": "رائعة؛ المساندة من ألفاظ التعاون."}, {"q": "إلى أي زمن يتوجه الشاعر في قصيدة «الصغير الكبير»؟", "options": ["زمن الطفولة", "زمن الشتاء", "زمن السفر", "زمن الحرب"], "a": "زمن الطفولة", "msg": "صحيح."}, {"q": "ما النبتة التي وردت في الأبيات؟", "options": ["نبتة القمح", "نبتة الورد", "نبتة النخيل", "نبتة النعناع"], "a": "نبتة القمح", "msg": "أحسنتِ."}, {"q": "ما معنى كلمة «حثيثًا»؟", "options": ["سريعًا", "بطيئًا", "حزينًا", "غريبًا"], "a": "سريعًا", "msg": "صحيح؛ حثيثًا تعني سريعًا."}, {"q": "ما معنى «يضيرني»؟", "options": ["يؤذيني", "ينفعني", "يسرني", "يرشدني"], "a": "يؤذيني", "msg": "إجابة صحيحة."}, {"q": "ما مضاد كلمة «كدّ» في القصيدة؟", "options": ["راحة", "تعب", "اجتهاد", "عمل"], "a": "راحة", "msg": "صحيح."}, {"q": "ما الفكرة العامة للقصيدة؟", "options": ["أهمية العلم والعمل والإخلاص", "فوائد اللعب فقط", "وصف البحر", "حكايات الجدة"], "a": "أهمية العلم والعمل والإخلاص", "msg": "ممتازة."}, {"q": "أي صفة تجعل الإنسان مفتخرًا في نظر الشاعر؟", "options": ["المغامرة", "الكسل", "الصمت", "التردد"], "a": "المغامرة", "msg": "صحيح حسب تدريبات القصيدة."}, {"q": "بم شبّه الشاعر نفع المتعلم؟", "options": ["بنفع القمح للإنسان", "بسرعة الطائر", "بهدوء البحر", "بلمعان الذهب"], "a": "بنفع القمح للإنسان", "msg": "رائعة."}, {"q": "لماذا كرر الشاعر كلمة «مجد»؟", "options": ["ليؤكد عظم المجد وقيمته", "ليصف المطر", "ليمدح النوم", "ليتجنب المعنى"], "a": "ليؤكد عظم المجد وقيمته", "msg": "صحيح."}, {"q": "من الذي يفوز بالسباق في رأي الشاعر؟", "options": ["المجد؛ لأن همته عالية", "الكسول", "الخائف", "المتردد"], "a": "المجد؛ لأن همته عالية", "msg": "إجابة تحليلية موفقة."}, {"q": "ماذا يريد الحفيد من جدته في «رسالة إلى جدتي»؟", "options": ["أن تحكي له أجمل الحكايات", "أن تسافر بعيدًا", "أن تتركهم", "أن تبيع الكتب"], "a": "أن تحكي له أجمل الحكايات", "msg": "صحيح."}, {"q": "أين يقضي الأحفاد معظم وقتهم؟", "options": ["أمام الشاشات", "في المزرعة", "في البحر", "في السوق"], "a": "أمام الشاشات", "msg": "إجابة صحيحة."}, {"q": "ما سبب حزن الحفيد على جدته؟", "options": ["رؤيتها تتألم من المرض", "نجاحها", "سفرها للمدرسة", "قراءتها كتابًا"], "a": "رؤيتها تتألم من المرض", "msg": "صحيح."}, {"q": "ما مهمة الجدة الخالدة كما ورد في الرسالة؟", "options": ["حكاية القصص والأساطير لأحفادها", "الذهاب إلى السوق", "إعداد الواجبات", "تنظيم المكتبة"], "a": "حكاية القصص والأساطير لأحفادها", "msg": "أحسنتِ."}, {"q": "ما الغرض من رسالة الأحفاد إلى الجدة؟", "options": ["التعبير عن الشوق والحنين لحكايات الجدة", "طلب مال", "وصف رحلة", "كتابة إعلان"], "a": "التعبير عن الشوق والحنين لحكايات الجدة", "msg": "رائعة."}, {"q": "ما فائدة الأجهزة الإلكترونية من وجهة نظر الجدة؟", "options": ["ترتقي بالتفكير وتحسّنه", "تمنع التعلم", "تزيد المرض", "تلغي القراءة"], "a": "ترتقي بالتفكير وتحسّنه", "msg": "صحيح."}, {"q": "ما الأسلوب في عبارة: «ما علمتم بحاجة إلى هذه الجدة»؟", "options": ["النفي", "الطلب", "الاستفهام", "التوكيد"], "a": "النفي", "msg": "أحسنتِ."}, {"q": "علام يدل قول الجدة: «يا من تسكنون القلب»؟", "options": ["حبها الشديد لأحفادها وتعلقها بهم", "غضبها منهم", "نسيانها لهم", "رفضها للعودة"], "a": "حبها الشديد لأحفادها وتعلقها بهم", "msg": "إجابة دقيقة."}, {"q": "من المرسل في الرسالة الأولى؟", "options": ["الحفيد", "الجدة", "المعلمة", "الأب"], "a": "الحفيد", "msg": "صحيح."}, {"q": "من المرسل إليه في الرسالة الأولى؟", "options": ["الجدة", "الحفيد", "المعلمة", "الطبيبة"], "a": "الجدة", "msg": "صحيح."}], "grammar": [{"q": "استخرجي اسمًا مجرورًا من العبارة: «إلى العلا».", "options": ["العلا", "أسير", "حثيثًا", "ليس"], "a": "العلا", "msg": "صحيح؛ العلا اسم مجرور."}, {"q": "إعراب «أسيرُ» في: «أسيرُ إلى العلا».", "options": ["فعل مضارع مرفوع", "فعل ماضٍ", "اسم مجرور", "مفعول مطلق"], "a": "فعل مضارع مرفوع", "msg": "أحسنتِ."}, {"q": "إعراب «العلياء» بعد حرف الجر «إلى».", "options": ["اسم مجرور", "فاعل", "خبر", "مفعول به"], "a": "اسم مجرور", "msg": "صحيح."}, {"q": "صوغي اسم الفاعل من الفعل: كتب.", "options": ["كاتب", "مكتوب", "كتاب", "كتابة"], "a": "كاتب", "msg": "صحيح."}, {"q": "صوغي اسم الفاعل من الفعل: فهم.", "options": ["فاهم", "مفهوم", "فهم", "فهيم"], "a": "فاهم", "msg": "أحسنتِ."}, {"q": "صوغي اسم الفاعل من الفعل: شكر.", "options": ["شاكر", "مشكور", "شكر", "شكور"], "a": "شاكر", "msg": "صحيح."}, {"q": "ما الفعل المناسب لاسم الفاعل «قاطع»؟", "options": ["قطع", "قاطع", "مقطوع", "قطعة"], "a": "قطع", "msg": "صحيح."}, {"q": "ما الفعل المناسب لاسم الفاعل «الناجح»؟", "options": ["نجح", "أنجح", "ناجح", "نجاح"], "a": "نجح", "msg": "أحسنتِ."}, {"q": "ما الفعل المناسب لاسم الفاعل «فاقد»؟", "options": ["فقد", "فاقد", "مفقود", "فقدان"], "a": "فقد", "msg": "صحيح."}, {"q": "اختاري الجملة الصحيحة في توظيف اسم الفاعل.", "options": ["رأيتُ طالبَ العلم", "رأيتُ شرب الماء", "رأيتُ فهم الدرس", "رأيتُ كتب العلم"], "a": "رأيتُ طالبَ العلم", "msg": "رائعة."}, {"q": "حددي المنادى في: «يا طالبةُ، اجتهدي».", "options": ["طالبة", "اجتهدي", "يا", "في"], "a": "طالبة", "msg": "صحيح."}, {"q": "أكملي النداء المناسب: «يا ____، تأكد من صحة المعلومة».", "options": ["باحثًا", "باحثُ", "باحثِ", "باحث"], "a": "باحثًا", "msg": "إجابة مناسبة."}, {"q": "أي جملة فيها أسلوب نداء صحيح؟", "options": ["يا أيتها الفتاة، أكرمي أهلك", "أيتها يا الفتاة", "الفتاة يا أكرمي", "أكرمي يا"], "a": "يا أيتها الفتاة، أكرمي أهلك", "msg": "صحيح."}, {"q": "أدخلي «أل» على المنادى: «يا سائقا، اتبع إرشادات الطريق».", "options": ["يا أيها السائق، اتبع إرشادات الطريق", "يا السائقُ اتبع", "يا سائقا السائق", "يا أيها سائقا"], "a": "يا أيها السائق، اتبع إرشادات الطريق", "msg": "أحسنتِ."}, {"q": "اختاري جملة مفيدة من الاسم «خولة» بأسلوب نداء.", "options": ["يا خولة، اجتهدي في دروسك", "خولة كتاب", "يا الخولة", "دروسك خولة"], "a": "يا خولة، اجتهدي في دروسك", "msg": "صحيح."}, {"q": "ما نوع المفعول المطلق في: «قال تعالى: وكلّم الله موسى تكليمًا»؟", "options": ["مؤكد للفعل", "مبين للنوع", "مبين للعدد", "فاعل"], "a": "مؤكد للفعل", "msg": "صحيح."}, {"q": "ما نوع المفعول المطلق في: «أحبّ العمل حبًا عظيمًا»؟", "options": ["مبين للنوع", "مؤكد للفعل", "مبين للعدد", "مبتدأ"], "a": "مبين للنوع", "msg": "أحسنتِ."}, {"q": "ما نوع المفعول المطلق في: «جلست على المقعد جلستين»؟", "options": ["مبين للعدد", "مؤكد للفعل", "مبين للنوع", "خبر"], "a": "مبين للعدد", "msg": "صحيح."}, {"q": "أكملي بمفعول مطلق: «أنجز العلم ____ كبيرًا».", "options": ["تقديرًا", "كتابًا", "طالبًا", "سعيدًا"], "a": "تقديرًا", "msg": "إجابة صحيحة."}, {"q": "حوّلي: «كان نومهم عميقًا» إلى جملة فيها مفعول مطلق.", "options": ["ناموا نومًا عميقًا", "ناموا في البيت", "النوم عميق", "هم نائمون"], "a": "ناموا نومًا عميقًا", "msg": "رائعة."}, {"q": "أكملي: «سجدتُ لله ____» مفعول مطلق مؤكد للفعل.", "options": ["سجودًا", "طويلًا", "سجدتين", "مكانًا"], "a": "سجودًا", "msg": "صحيح."}, {"q": "أكملي: «سجدتُ لله ____» مفعول مطلق مبين للعدد.", "options": ["سجدتين", "سجودًا", "طويلًا", "خشوعًا"], "a": "سجدتين", "msg": "أحسنتِ."}, {"q": "إعراب «دورتين» في: «دار الطائر دورتين».", "options": ["مفعول مطلق منصوب وعلامة نصبه الياء لأنه مثنى", "فاعل مرفوع", "خبر مرفوع", "مبتدأ"], "a": "مفعول مطلق منصوب وعلامة نصبه الياء لأنه مثنى", "msg": "إجابة متقدمة."}], "spelling": [{"q": "اختاري الكلمة الصحيحة: أجرى العملية ____ بارعان.", "options": ["طبيبان", "طبيبا", "طبيبين", "طبيبون"], "a": "طبيبان", "msg": "صحيح."}, {"q": "اختاري الصواب: قرأتُ إعلانًا يطلب ____ مبيعات.", "options": ["مشرفي", "مشرفان", "مشرفين", "مشرفون"], "a": "مشرفي", "msg": "صحيح."}, {"q": "اختاري الصواب: فازتا بناء حمد ____ رياضيتان.", "options": ["باخرتان", "باخرتا", "باخرتين", "باخرات"], "a": "باخرتان", "msg": "إجابة مناسبة بحسب السياق."}, {"q": "حوّلي الكلمة التي تحتها خط إلى مثنى: «شارك معلم العلوم الطلاب».", "options": ["شارك معلما العلوم الطلاب", "شارك معلمان العلوم الطلاب", "شارك معلمين العلوم الطلاب", "شارك معلمو العلوم الطلاب"], "a": "شارك معلما العلوم الطلاب", "msg": "صحيح؛ حذفت النون للإضافة."}, {"q": "حوّلي الكلمة إلى جمع مذكر سالم: «شارك معلم العلوم الطلاب».", "options": ["شارك معلمو العلوم الطلاب", "شارك معلما العلوم الطلاب", "شارك معلمين العلوم الطلاب", "شارك معلمان العلوم الطلاب"], "a": "شارك معلمو العلوم الطلاب", "msg": "أحسنتِ."}, {"q": "اختاري الكتابة الصحيحة عند الإضافة.", "options": ["مهندسا المشروع", "مهندسان المشروع", "مهندسين المشروع", "مهندسون المشروع"], "a": "مهندسا المشروع", "msg": "رائعة؛ عند الإضافة تحذف النون."}, {"q": "اختاري الكتابة الصحيحة.", "options": ["معلما العلوم", "معلمان العلوم", "معلمين العلوم", "معلمون العلوم"], "a": "معلما العلوم", "msg": "صحيح."}, {"q": "اختاري الكتابة الصحيحة.", "options": ["باخرتا الميناء", "باخرتان الميناء", "باخرتين الميناء", "باخرات الميناء"], "a": "باخرتا الميناء", "msg": "صحيح."}, {"q": "ما سبب حذف النون في «معلما العلوم»؟", "options": ["لأنها إضافة", "لأنها فعل", "لأنها مفرد", "لأنها جمع تكسير"], "a": "لأنها إضافة", "msg": "إجابة دقيقة."}, {"q": "اختاري الجملة الصحيحة إملائيًا.", "options": ["مهندسا المشروع بارعان", "مهندسان المشروع بارعان", "مهندسين المشروع بارعان", "مهندسون المشروع بارعان"], "a": "مهندسا المشروع بارعان", "msg": "أحسنتِ."}], "memory": [{"q": "أكملي: «أسير إلى العلا سيرًا ____».", "options": ["حثيثًا", "بطيئًا", "قليلًا", "بعيدًا"], "a": "حثيثًا", "msg": "صحيح."}, {"q": "ما معنى «حثيثًا»؟", "options": ["سريعًا", "متكاسلًا", "حزينًا", "غريبًا"], "a": "سريعًا", "msg": "أحسنتِ."}, {"q": "أكملي: «وليس يضيرني صغري إذا لم ____».", "options": ["ينبئني عن العلياء جيد", "أجلس في البيت", "أحزن كثيرًا", "أترك العلم"], "a": "ينبئني عن العلياء جيد", "msg": "رائعة."}, {"q": "ما العلاقة بين «فهم» و«رشد» في القصيدة؟", "options": ["ترادف", "تضاد", "سبب ونتيجة", "تشبيه"], "a": "ترادف", "msg": "صحيح."}, {"q": "ما القيمة التي تدل عليها القصيدة؟", "options": ["الطموح وعلو الهمة", "التكاسل", "الخوف", "الإهمال"], "a": "الطموح وعلو الهمة", "msg": "إجابة موفقة."}, {"q": "بم ترتبط كلمة «المجد» في القصيدة؟", "options": ["الهمة العالية والهدف السامي", "النوم", "الخوف", "الابتعاد عن العلم"], "a": "الهمة العالية والهدف السامي", "msg": "صحيح."}, {"q": "أي معنى يناسب «العلياء»؟", "options": ["المكانة العالية", "الأرض المنخفضة", "البحر", "الهدوء"], "a": "المكانة العالية", "msg": "أحسنتِ."}, {"q": "أي كلمة تدل على الحركة في القصيدة؟", "options": ["أسير", "القمح", "العلياء", "صغري"], "a": "أسير", "msg": "صحيح."}], "external": [{"q": "في نص «الفريق الصغير»، ما موضوع المشروع؟", "options": ["ترشيد الماء", "زراعة القمح", "كتابة رسالة", "تنظيم رحلة"], "a": "ترشيد الماء", "msg": "صحيح."}, {"q": "ما سبب نجاح مشروع الفريق الصغير؟", "options": ["تقسيم الأدوار والتعاون", "ترك العمل", "غياب الطالبات", "نسيان المهمة"], "a": "تقسيم الأدوار والتعاون", "msg": "أحسنتِ."}, {"q": "ما القيمة المستفادة من نص «الفريق الصغير»؟", "options": ["التعاون", "الإهمال", "العناد", "الخوف"], "a": "التعاون", "msg": "رائعة."}, {"q": "في نص «الفتاة التي زرعت الأمل»، ماذا كانت تحب لولوة؟", "options": ["القراءة", "النوم", "السفر", "الصمت"], "a": "القراءة", "msg": "صحيح."}, {"q": "لماذا اقترحت لولوة إنشاء ركن للقراءة؟", "options": ["لمساعدة زميلاتها", "لإغلاق الصف", "لإضاعة الوقت", "لإخفاء الكتب"], "a": "لمساعدة زميلاتها", "msg": "أحسنتِ."}, {"q": "أي صفة تناسب لولوة؟", "options": ["متعاونة ومبادرة", "مهملة", "كسولة", "مترددة"], "a": "متعاونة ومبادرة", "msg": "إجابة دقيقة."}, {"q": "ما أثر قراءة لولوة لزميلاتها؟", "options": ["أصبحن أكثر حبًا للقراءة وثقة بأنفسهن", "تركن المدرسة", "توقفن عن التعلم", "أضعن الكتب"], "a": "أصبحن أكثر حبًا للقراءة وثقة بأنفسهن", "msg": "رائعة."}]};
+const titles = {
+  mixed:"تحدي شامل عشوائي 🚀",
+  reading:"فهم النصوص والقراءة الداخلية 📖",
+  grammar:"القواعد النحوية ✍️",
+  spelling:"الإملاء 🛡️",
+  memory:"الحفظ 🎤",
+  external:"القراءة الخارجية 🌟"
+};
+let score = Number(localStorage.getItem("bigBankScore") || 0);
+let current = "mixed";
+let currentItem = null;
+let answered = false;
+document.getElementById("score").textContent = score;
+document.getElementById("count").textContent = Object.values(bank).flat().length;
+
+function pool(type){
+  if(type === "mixed") return Object.entries(bank).flatMap(([cat, arr]) => arr.map(x => ({...x, cat})));
+  return (bank[type] || []).map(x => ({...x, cat:type}));
+}
+function openChallenge(type){
+  current = type;
+  document.getElementById("title").textContent = titles[type];
+  document.getElementById("intro").textContent = type === "mixed" ? "تحدي شامل يسحب أسئلة عشوائية من كل الفروع." : "أسئلة متنوعة من هذا الفرع.";
+  next();
+  document.getElementById("overlay").classList.add("show");
+  say(titles[type]);
+}
+function next(){
+  answered = false;
+  const arr = pool(current);
+  currentItem = arr[Math.floor(Math.random() * arr.length)];
+  document.getElementById("categoryPill").textContent = categoryName(currentItem.cat);
+  document.getElementById("progressPill").textContent = "سؤال عشوائي";
+  document.getElementById("question").textContent = currentItem.q;
+  const options = document.getElementById("options");
+  options.innerHTML = "";
+  const shuffled = [...currentItem.options].sort(() => Math.random() - .5);
+  shuffled.forEach(opt => {
+    const btn = document.createElement("button");
+    btn.className = "option";
+    btn.textContent = opt;
+    btn.onclick = () => check(opt, btn);
+    options.appendChild(btn);
+  });
+  const fb = document.getElementById("feedback");
+  fb.className = "feedback";
+  fb.textContent = "";
+}
+function check(selected, btn){
+  if(answered) return;
+  answered = true;
+  document.querySelectorAll(".option").forEach(b => {
+    b.disabled = true;
+    if(b.textContent === currentItem.a) b.classList.add("correct");
+  });
+  const fb = document.getElementById("feedback");
+  if(selected === currentItem.a){
+    btn.classList.add("correct");
+    score += 10;
+    localStorage.setItem("bigBankScore", score);
+    document.getElementById("score").textContent = score;
+    document.getElementById("correctSound").play().catch(()=>{});
+    fb.className = "feedback good";
+    fb.textContent = currentItem.msg + " +10 نقاط";
+    say("أحسنت يا بطلة. " + currentItem.msg);
+    celebrate();
+  } else {
+    btn.classList.add("wrong");
+    document.getElementById("wrongSound").play().catch(()=>{});
+    fb.className = "feedback bad";
+    fb.textContent = "حاولي مرة أخرى. الإجابة الصحيحة هي: " + currentItem.a;
+    say("حاولي مرة أخرى يا بطلة.");
+  }
+}
+function closeOverlay(){ document.getElementById("overlay").classList.remove("show"); }
+function openHelp(){
+  document.getElementById("title").textContent = "المساعدة";
+  document.getElementById("intro").textContent = "اضغطي على أي بوابة داخل الصورة. كل بوابة تفتح أسئلة عشوائية من بنك موسع مبني على محتوى الملف.";
+  document.getElementById("categoryPill").textContent = "تعليمات";
+  document.getElementById("progressPill").textContent = "جاهز";
+  document.getElementById("question").textContent = "زر ابدئي التحدي يعطيك أسئلة شاملة من كل الفروع.";
+  document.getElementById("options").innerHTML = "";
+  document.getElementById("feedback").className = "feedback";
+  document.getElementById("overlay").classList.add("show");
+}
+function categoryName(cat){
+  return {reading:"القراءة الداخلية", grammar:"القواعد", spelling:"الإملاء", memory:"الحفظ", external:"القراءة الخارجية"}[cat] || "شامل";
+}
+function say(text){
+  try {
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = "ar";
+    u.rate = .9;
+    u.pitch = 1.35;
+    speechSynthesis.cancel();
+    speechSynthesis.speak(u);
+  } catch(e) {}
+}
+function celebrate(){
+  const symbols = ["✨","⭐","🏆","🎉","💗"];
+  for(let i=0;i<20;i++){
+    const c = document.createElement("div");
+    c.className = "confetti";
+    c.textContent = symbols[Math.floor(Math.random()*symbols.length)];
+    c.style.left = Math.random()*100 + "vw";
+    c.style.animationDelay = (Math.random()*.6)+"s";
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(),3000);
+  }
+}
+</script>
+</body>
+</html>
