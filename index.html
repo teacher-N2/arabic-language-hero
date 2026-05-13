@@ -1,0 +1,500 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>رحلة بطلة اللغة العربية</title>
+  <style>
+    :root{
+      --primary:#7c3aed;
+      --secondary:#f59e0b;
+      --green:#10b981;
+      --red:#ef4444;
+      --bg:#f8fafc;
+      --card:#ffffff;
+      --text:#0f172a;
+      --muted:#64748b;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:"Tahoma","Arial",sans-serif;
+      background:linear-gradient(135deg,#fff7ed,#f8fafc,#ecfeff);
+      color:var(--text);
+      min-height:100vh;
+    }
+    .container{max-width:1200px;margin:auto;padding:24px}
+    .hero{
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+    }
+    .hero-card{
+      width:100%;
+      max-width:1000px;
+      background:white;
+      border-radius:34px;
+      box-shadow:0 24px 60px rgba(15,23,42,.12);
+      padding:34px;
+      display:grid;
+      grid-template-columns:1.2fr .8fr;
+      gap:26px;
+      overflow:hidden;
+    }
+    h1{font-size:44px;line-height:1.4;margin:0 0 12px;font-weight:900}
+    h2{font-size:30px;margin:0 0 12px}
+    h3{font-size:22px;margin:0 0 10px}
+    p{line-height:2;font-size:18px}
+    .badge{
+      display:inline-block;
+      background:#ede9fe;
+      color:#4c1d95;
+      padding:8px 16px;
+      border-radius:999px;
+      font-weight:700;
+      margin-bottom:12px;
+    }
+    input{
+      width:100%;
+      padding:16px 18px;
+      border:2px solid #e2e8f0;
+      border-radius:18px;
+      font-size:18px;
+      outline:none;
+      text-align:right;
+    }
+    button{
+      border:none;
+      border-radius:18px;
+      padding:15px 18px;
+      font-size:17px;
+      font-weight:800;
+      cursor:pointer;
+      transition:.2s;
+    }
+    button:hover{transform:translateY(-2px)}
+    .primary{background:var(--primary);color:white}
+    .secondary{background:#e2e8f0;color:#0f172a}
+    .ghost{background:white;border:2px solid #e2e8f0}
+    .start-row{display:flex;gap:10px;margin-top:18px}
+    .salama{
+      min-height:340px;
+      border-radius:28px;
+      background:linear-gradient(135deg,#f1f5f9,#fff);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      position:relative;
+      overflow:hidden;
+    }
+    .salama-figure{
+      width:175px;height:250px;background:#334155;border-radius:85px 85px 55px 55px;position:relative;
+      box-shadow:0 18px 35px rgba(15,23,42,.18);
+      animation:float 3s ease-in-out infinite;
+    }
+    .salama-figure:before{
+      content:"";position:absolute;top:28px;left:50%;transform:translateX(-50%);
+      width:105px;height:105px;background:#fde68a;border:6px solid white;border-radius:50%;
+    }
+    .salama-figure:after{
+      content:"سلامة";position:absolute;bottom:34px;left:0;right:0;text-align:center;color:white;font-size:24px;font-weight:900;
+    }
+    .spark{position:absolute;font-size:38px;animation:spin 4s linear infinite}
+    .spark.one{top:30px;right:30px}.spark.two{bottom:30px;left:34px}
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-13px)}}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .topbar{
+      display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px;flex-wrap:wrap;
+    }
+    .score-card{
+      background:white;border-radius:22px;padding:16px 20px;box-shadow:0 8px 25px rgba(15,23,42,.08);min-width:280px;
+    }
+    .progress{height:12px;background:#e2e8f0;border-radius:999px;overflow:hidden;margin-top:8px}
+    .progress span{display:block;height:100%;background:linear-gradient(90deg,#7c3aed,#f59e0b);width:0%}
+    .layout{display:grid;grid-template-columns:310px 1fr;gap:20px}
+    .side{display:flex;flex-direction:column;gap:12px}
+    .branch{
+      background:white;border-radius:24px;padding:18px;box-shadow:0 8px 25px rgba(15,23,42,.07);
+      cursor:pointer;border:3px solid transparent;
+    }
+    .branch.active{border-color:#7c3aed}
+    .branch small{color:var(--muted);font-weight:700}
+    .panel{
+      background:white;border-radius:30px;padding:26px;box-shadow:0 10px 35px rgba(15,23,42,.08);
+    }
+    .lesson-tabs{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0}
+    .lesson-tabs button.active{background:#7c3aed;color:white}
+    .passage{background:#f8fafc;border-radius:24px;padding:18px;margin:18px 0;border:1px solid #e2e8f0}
+    .question{
+      background:#fff;border:1px solid #e2e8f0;border-radius:24px;padding:20px;margin:16px 0;
+      box-shadow:0 6px 18px rgba(15,23,42,.05);
+    }
+    .q-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+    .level{background:#fef3c7;color:#92400e;border-radius:999px;padding:6px 12px;font-weight:900}
+    .points{background:#dcfce7;color:#065f46;border-radius:999px;padding:6px 12px;font-weight:900}
+    .options{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+    .option{background:#f1f5f9;text-align:right}
+    .option.correct{background:#dcfce7;border:2px solid #10b981}
+    .option.wrong{background:#fee2e2;border:2px solid #ef4444}
+    .feedback{padding:14px;border-radius:18px;margin-top:12px;font-weight:900;display:none}
+    .feedback.good{display:block;background:#dcfce7;color:#065f46}
+    .feedback.bad{display:block;background:#fee2e2;color:#991b1b}
+    .certificate{
+      display:none;background:linear-gradient(135deg,#fef3c7,#fff);border:4px solid #f59e0b;
+      border-radius:30px;padding:28px;text-align:center;margin-bottom:20px;
+    }
+    .certificate.show{display:block}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+    .footer-note{color:var(--muted);font-size:15px;margin-top:18px}
+    @media(max-width:850px){
+      .hero-card,.layout{grid-template-columns:1fr}
+      h1{font-size:34px}
+      .options{grid-template-columns:1fr}
+      .start-row{flex-direction:column}
+    }
+  </style>
+</head>
+<body>
+
+<section id="startScreen" class="hero">
+  <div class="hero-card">
+    <div>
+      <span class="badge">منصة تفاعلية للصف الخامس</span>
+      <h1>رحلة بطلة اللغة العربية</h1>
+      <p>
+        منصة ممتعة تجمع القراءة الداخلية، والقراءة الخارجية، والكلمة والجملة، والإملاء، والحفظ.
+        ابدئي رحلتكِ، واجمعي النقاط، وتوَّجي بلقب بطلة اللغة العربية.
+      </p>
+      <input id="studentName" placeholder="اكتبي اسم الطالبة هنا" />
+      <div class="start-row">
+        <button class="primary" onclick="startGame()">ابدئي الرحلة</button>
+        <button class="ghost" onclick="document.getElementById('studentName').value='طالبة السلام'">تجربة سريعة</button>
+      </div>
+    </div>
+    <div class="salama">
+      <div class="spark one">✨</div>
+      <div class="salama-figure"></div>
+      <div class="spark two">🏆</div>
+    </div>
+  </div>
+</section>
+
+<section id="appScreen" style="display:none">
+  <div class="container">
+    <div class="topbar">
+      <div>
+        <span class="badge">مرحبًا يا <span id="nameLabel"></span></span>
+        <h1>رحلة بطلة اللغة العربية</h1>
+      </div>
+      <div class="score-card">
+        <strong>النقاط: <span id="scoreLabel">0</span> / <span id="totalLabel">0</span></strong>
+        <div class="progress"><span id="progressBar"></span></div>
+        <div class="footer-note">أجيبي عن الأسئلة، واجمعي النجوم.</div>
+      </div>
+    </div>
+
+    <div id="certificate" class="certificate">
+      <h1>مبارك يا بطلة اللغة العربية! 👑</h1>
+      <p>لقد اجتزتِ فروع المنصة، وأثبتِّ قدرتكِ على الفهم والتحليل والإجابة بثقة.</p>
+    </div>
+
+    <div class="layout">
+      <aside class="side" id="branches"></aside>
+      <main class="panel">
+        <div>
+          <span class="badge" id="branchSubtitle"></span>
+          <h2 id="branchTitle"></h2>
+          <p id="branchIntro"></p>
+        </div>
+        <div class="lesson-tabs" id="lessons"></div>
+        <div id="passageBox"></div>
+        <div id="questions"></div>
+        <div class="actions">
+          <button class="primary" onclick="nextLesson()">الانتقال للدرس التالي</button>
+          <button class="secondary" onclick="resetGame()">إعادة المحاولة</button>
+        </div>
+      </main>
+    </div>
+  </div>
+</section>
+
+<script>
+const data = [
+  {
+    id:"internal",
+    title:"القراءة الداخلية",
+    subtitle:"دروس الكتاب",
+    intro:"أجيبي عن أسئلة الفهم، والاستيعاب، والمفردات، والتحليل.",
+    lessons:[
+      {
+        title:"العمل الجماعي",
+        game:"مدينة التعاون",
+        passage:"",
+        questions:[
+          q("ما الفكرة العامة للنص؟",["أهمية العمل الجماعي","وصف الحديقة المدرسية","فوائد الأجهزة","رحلة بحرية"],"أهمية العمل الجماعي",1,"أحسنتِ! النص يركز على قيمة العمل الجماعي."),
+          q("لماذا يفضَّل العمل الجماعي؟",["لأنه يوفّر الجهد ويختصر الوقت","لأنه يضيّع الوقت","لأنه يمنع التفكير","لأنه يقلل النجاح"],"لأنه يوفّر الجهد ويختصر الوقت",2,"إجابة دقيقة؛ فالعمل الجماعي يسهّل الوصول إلى الهدف."),
+          q("أي عبارة تناسب معنى التعاون؟",["اليد الواحدة لا تصفّق","الصحة تاج","الوقت كالسيف","العلم نور"],"اليد الواحدة لا تصفّق",3,"رائعة! العبارة تؤكد أهمية التعاون.")
+        ]
+      },
+      {
+        title:"الصغير الكبير",
+        game:"رحلة القمح الذهبية",
+        passage:"",
+        questions:[
+          q("إلى أي زمن يتوجه الشاعر؟",["زمن الطفولة","زمن السفر","زمن الحزن","زمن المطر"],"زمن الطفولة",1,"صحيح؛ الشاعر يستحضر زمن الطفولة."),
+          q("ما معنى كلمة «حثيثًا»؟",["سريعًا","بطيئًا","خائفًا","حزينًا"],"سريعًا",2,"أحسنتِ؛ معنى حثيثًا: سريعًا."),
+          q("يرمز القمح في القصيدة إلى:",["النفع والعطاء","الكسل","الخوف","الضياع"],"النفع والعطاء",3,"إجابة موفقة؛ القمح رمز للنفع والخير.")
+        ]
+      },
+      {
+        title:"رسالة إلى جدتي",
+        game:"بيت الجدة الدافئ",
+        passage:"",
+        questions:[
+          q("ماذا يريد الحفيد من جدته؟",["أن تحكي له أجمل الحكايات","أن تسافر بعيدًا","أن تترك القراءة","أن تغلق البيت"],"أن تحكي له أجمل الحكايات",1,"أحسنتِ؛ الحفيد يشتاق إلى حكايات جدته."),
+          q("أين يقضي الأحفاد معظم وقتهم؟",["أمام الشاشات","في البحر","في السوق","في الحديقة"],"أمام الشاشات",2,"صحيح؛ النص يبيّن انشغال الأحفاد بالأجهزة الإلكترونية."),
+          q("ما الغرض من رسالة الأحفاد؟",["دعوة الجدة إلى العودة","شراء هدية","وصف المدرسة","طلب كتاب جديد"],"دعوة الجدة إلى العودة",3,"رائعة! فهمتِ الغرض الرئيس من الرسالة.")
+        ]
+      }
+    ]
+  },
+  {
+    id:"external",
+    title:"القراءة الخارجية",
+    subtitle:"نصوص تحاكي الكتاب",
+    intro:"نصوص جديدة مشابهة لمستوى القراءة الداخلية؛ لتدريب الطالبة على الاختبار.",
+    lessons:[
+      {
+        title:"الفريق الصغير",
+        game:"مختبر الإنجاز",
+        passage:"في صباحٍ مشرق، اجتمعت مريم وزميلاتها في مختبر المدرسة لإعداد مشروعٍ علمي عن ترشيد الماء. قسمت المعلمة الأدوار بين الطالبات، فكتبت مريم المقدمة، وجمعت سارة الصور، وأعدّت نورة العرض. وعندما تعاون الجميع، ظهر المشروع منظمًا وجميلًا. شعرت الطالبات بالفخر؛ لأن كل واحدة منهن شاركت بجهدها في نجاح الفريق.",
+        questions:[
+          q("ما موضوع المشروع؟",["ترشيد الماء","زراعة القمح","كتابة قصة","تنظيم رحلة"],"ترشيد الماء",1,"صحيح؛ كان المشروع عن ترشيد الماء."),
+          q("ما سبب نجاح الفريق؟",["تعاون الطالبات","ترك العمل","تأجيل المشروع","غياب المعلمة"],"تعاون الطالبات",2,"أحسنتِ؛ التعاون هو سبب النجاح."),
+          q("ما القيمة المستفادة من النص؟",["التعاون","الإهمال","العناد","التسرع"],"التعاون",3,"رائعة؛ النص يرسخ قيمة التعاون.")
+        ]
+      },
+      {
+        title:"الفتاة التي زرعت الأمل",
+        game:"حديقة الكلمات",
+        passage:"كانت لولوة تحب القراءة حبًا كبيرًا، وكانت تحمل معها كتابًا صغيرًا في كل مكان. لاحظت أن بعض زميلاتها يجدن صعوبة في فهم القصص، فاقترحت على المعلمة إنشاء ركن للقراءة في الصف. بدأت لولوة تقرأ لزميلاتها كل يوم قصة قصيرة، ثم تناقشهن في معانيها. وبعد أسابيع، أصبحت زميلاتها أكثر حبًا للقراءة وثقة بأنفسهن.",
+        questions:[
+          q("ماذا كانت تحب لولوة؟",["القراءة","النوم","السفر","الصمت"],"القراءة",1,"صحيح؛ لولوة كانت محبة للقراءة."),
+          q("لماذا اقترحت إنشاء ركن للقراءة؟",["لمساعدة زميلاتها","لإغلاق الصف","لإضاعة الوقت","لإخفاء الكتب"],"لمساعدة زميلاتها",2,"أحسنتِ؛ أرادت مساعدة زميلاتها."),
+          q("أي صفة تناسب لولوة؟",["متعاونة","كسولة","مترددة","مهملة"],"متعاونة",3,"إجابة موفقة؛ لولوة شخصية متعاونة.")
+        ]
+      }
+    ]
+  },
+  {
+    id:"grammar",
+    title:"الكلمة والجملة",
+    subtitle:"النحو واللغويات",
+    intro:"تدريبات على اسم الفاعل، والمفعول المطلق، والمنادى، والتراكيب.",
+    lessons:[
+      {
+        title:"اسم الفاعل",
+        game:"مصنع الكلمات",
+        passage:"",
+        questions:[
+          q("صوغي اسم الفاعل من الفعل: كتب.",["كاتب","مكتوب","كتاب","كتابة"],"كاتب",1,"صحيح؛ اسم الفاعل من كتب هو كاتب."),
+          q("أي كلمة تمثل اسم فاعل؟",["شارب","مشروب","شرب","شراب"],"شارب",2,"أحسنتِ؛ شارب اسم فاعل."),
+          q("اختاري الجملة الصحيحة.",["رأيتُ طالبَ العلم.","رأيتُ كتب العلم.","رأيتُ شرب الماء.","رأيتُ فهم الدرس."],"رأيتُ طالبَ العلم.",3,"رائعة؛ كلمة طالب اسم فاعل.")
+        ]
+      },
+      {
+        title:"المفعول المطلق",
+        game:"عجلة التأكيد",
+        passage:"",
+        questions:[
+          q("سجدتُ لله سجودًا. نوع المفعول المطلق:",["مؤكد للفعل","مبين للنوع","مبين للعدد","فاعل"],"مؤكد للفعل",1,"صحيح؛ سجودًا أكدت الفعل."),
+          q("قرأتُ قراءةً متأنيةً. نوع المفعول المطلق:",["مبين للنوع","مؤكد للفعل","مبين للعدد","مبتدأ"],"مبين للنوع",2,"أحسنتِ؛ لأنه بيّن نوع القراءة."),
+          q("دار الطائر دورتين. كلمة دورتين:",["مفعول مطلق مبين للعدد","فاعل","مبتدأ","خبر"],"مفعول مطلق مبين للعدد",3,"إجابة دقيقة؛ دورتين مفعول مطلق مبين للعدد.")
+        ]
+      }
+    ]
+  },
+  {
+    id:"spelling",
+    title:"الإملاء",
+    subtitle:"درع الإملاء",
+    intro:"تدريبات على الكتابة الصحيحة، وحذف النون للإضافة، والهمزات، والتنوين.",
+    lessons:[
+      {
+        title:"حذف النون للإضافة",
+        game:"درع الإملاء",
+        passage:"",
+        questions:[
+          q("اختاري الكتابة الصحيحة:",["معلما العلوم","معلمان العلوم","معلمين العلوم","معلمون العلوم"],"معلما العلوم",2,"أحسنتِ؛ حُذفت النون للإضافة."),
+          q("أي عبارة كُتبت كتابة صحيحة؟",["مهندسا المشروع","مهندسان المشروع","مهندسين المشروع","مهندسون المشروع"],"مهندسا المشروع",3,"رائعة؛ عند الإضافة تُحذف النون."),
+          q("اختاري الصواب:",["باخرتا الميناء","باخرتان الميناء","باخرتين الميناء","باخرات الميناء"],"باخرتا الميناء",2,"صحيح؛ باخرتا الميناء كتابة سليمة في الإضافة.")
+        ]
+      }
+    ]
+  },
+  {
+    id:"memorization",
+    title:"الحفظ",
+    subtitle:"الأبيات الذهبية",
+    intro:"أكملي الأبيات، وافهمي معانيها، واجمعي نجوم الحفظ.",
+    lessons:[
+      {
+        title:"الأبيات الذهبية",
+        game:"سباق الحفظ",
+        passage:"",
+        questions:[
+          q("أكملي: أسير إلى العلا سيرًا ____.",["حثيثًا","بطيئًا","بعيدًا","قليلًا"],"حثيثًا",1,"صحيح؛ الكلمة المناسبة هي حثيثًا."),
+          q("ما معنى حثيثًا؟",["سريعًا","متكاسلًا","خائفًا","حزينًا"],"سريعًا",2,"أحسنتِ؛ حثيثًا تعني سريعًا."),
+          q("أي قيمة يدل عليها البيت؟",["الطموح","الإهمال","التراجع","الكسل"],"الطموح",3,"رائعة؛ البيت يدل على الطموح وعلو الهمة.")
+        ]
+      }
+    ]
+  }
+];
+
+function q(question, options, answer, points, feedback){
+  return {question, options, answer, points, feedback, answered:false};
+}
+
+let currentBranch = 0;
+let currentLesson = 0;
+let score = 0;
+let total = data.flatMap(b=>b.lessons).flatMap(l=>l.questions).reduce((s,q)=>s+q.points,0);
+
+function startGame(){
+  const name = document.getElementById("studentName").value.trim();
+  if(!name){ alert("اكتبي اسم الطالبة أولًا."); return; }
+  document.getElementById("nameLabel").textContent = name;
+  document.getElementById("startScreen").style.display="none";
+  document.getElementById("appScreen").style.display="block";
+  document.getElementById("totalLabel").textContent = total;
+  render();
+}
+
+function render(){
+  renderBranches();
+  renderLessons();
+  renderPanel();
+  updateScore();
+}
+
+function renderBranches(){
+  const box = document.getElementById("branches");
+  box.innerHTML = "";
+  data.forEach((b,i)=>{
+    const div = document.createElement("div");
+    div.className = "branch" + (i===currentBranch ? " active":"");
+    div.innerHTML = `<h3>${b.title}</h3><small>${b.subtitle}</small>`;
+    div.onclick = ()=>{currentBranch=i;currentLesson=0;render();};
+    box.appendChild(div);
+  });
+}
+
+function renderLessons(){
+  const box = document.getElementById("lessons");
+  box.innerHTML = "";
+  data[currentBranch].lessons.forEach((l,i)=>{
+    const btn = document.createElement("button");
+    btn.className = "secondary" + (i===currentLesson ? " active":"");
+    btn.textContent = l.title;
+    btn.onclick = ()=>{currentLesson=i;render();};
+    box.appendChild(btn);
+  });
+}
+
+function renderPanel(){
+  const branch = data[currentBranch];
+  const lesson = branch.lessons[currentLesson];
+  document.getElementById("branchTitle").textContent = lesson.game;
+  document.getElementById("branchSubtitle").textContent = branch.title + " | " + lesson.title;
+  document.getElementById("branchIntro").textContent = branch.intro;
+
+  const passageBox = document.getElementById("passageBox");
+  passageBox.innerHTML = lesson.passage ? `<div class="passage"><h3>النص</h3><p>${lesson.passage}</p></div>` : "";
+
+  const qBox = document.getElementById("questions");
+  qBox.innerHTML = "";
+  lesson.questions.forEach((question,qi)=>{
+    const div = document.createElement("div");
+    div.className = "question";
+    div.innerHTML = `
+      <div class="q-head">
+        <span class="level">${question.points===1?"سهل":question.points===2?"متوسط":"تحدٍّ"}</span>
+        <span class="points">${question.points} نقاط</span>
+      </div>
+      <h3>${question.question}</h3>
+      <div class="options">
+        ${question.options.map(o=>`<button class="option" onclick="answerQuestion(${qi}, '${safe(o)}', this)">${o}</button>`).join("")}
+      </div>
+      <div class="feedback" id="fb-${qi}"></div>
+    `;
+    qBox.appendChild(div);
+  });
+}
+
+function safe(text){
+  return text.replaceAll("'", "\\'");
+}
+
+function answerQuestion(qi, option, btn){
+  const qObj = data[currentBranch].lessons[currentLesson].questions[qi];
+  if(qObj.answered) return;
+  qObj.answered = true;
+  const fb = document.getElementById("fb-"+qi);
+  const buttons = btn.parentElement.querySelectorAll("button");
+  buttons.forEach(b=>{
+    if(b.textContent===qObj.answer) b.classList.add("correct");
+    if(b===btn && option!==qObj.answer) b.classList.add("wrong");
+  });
+  if(option===qObj.answer){
+    score += qObj.points;
+    fb.className = "feedback good";
+    fb.textContent = qObj.feedback;
+  }else{
+    fb.className = "feedback bad";
+    fb.textContent = "حاولي مرة أخرى، واقرئي السؤال بتركيز.";
+  }
+  updateScore();
+  checkChampion();
+}
+
+function updateScore(){
+  document.getElementById("scoreLabel").textContent = score;
+  const percent = Math.round((score/total)*100);
+  document.getElementById("progressBar").style.width = percent + "%";
+}
+
+function nextLesson(){
+  const branch = data[currentBranch];
+  if(currentLesson < branch.lessons.length-1){
+    currentLesson++;
+  }else if(currentBranch < data.length-1){
+    currentBranch++;
+    currentLesson=0;
+  }else{
+    checkChampion(true);
+  }
+  render();
+}
+
+function checkChampion(force=false){
+  const allAnswered = data.flatMap(b=>b.lessons).flatMap(l=>l.questions).every(q=>q.answered);
+  if(allAnswered || force){
+    document.getElementById("certificate").classList.add("show");
+    window.scrollTo({top:0,behavior:"smooth"});
+  }
+}
+
+function resetGame(){
+  score = 0;
+  currentBranch = 0;
+  currentLesson = 0;
+  data.forEach(b=>b.lessons.forEach(l=>l.questions.forEach(q=>q.answered=false)));
+  document.getElementById("certificate").classList.remove("show");
+  render();
+}
+</script>
+</body>
+</html>
